@@ -1,18 +1,18 @@
-# 初始化資料庫連線
 import pymongo
 client = pymongo.MongoClient("mongodb+srv://root:root123@realmcluster.jkwav.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 db = client.member_system
 print("資料庫連線建立成功！")
 
-# 初始化Flask 伺服器
+# 初始化 Flask 伺服器
 from flask import *
 app = Flask(__name__, static_folder = "public", static_url_path = "/")
 app.secret_key = "any string but secret"
 
-# 處理路由,首頁
+# 首頁
 @app.route("/")
 def index():
     return render_template("index.html")
+
 # 會員頁面
 @app.route("/member")
 def member():
@@ -51,7 +51,7 @@ def signup():
     })
     return redirect("/")
 
-# 建立登入表單
+# 登入
 @app.route("/signin", methods = ["POST"])
 def signin():
     # 從前端取得使用者輸入
@@ -66,10 +66,10 @@ def signin():
             {"password":password}
         ]
     })
-    # 找不到對應的資料,登入失敗導向到錯誤頁面
+    # 登入失敗導向到錯誤頁面
     if result == None:
         return redirect("/error?msg=帳號或密碼輸入錯誤！")
-    # 登入成功, 在Session紀錄會員資訊,導向到會員頁面
+    # 登入成功, 導向到會員頁面
     session["nickname"] = result["nickname"]
     return redirect("/member")
 
@@ -80,5 +80,4 @@ def signout():
     del session["nickname"]
     return redirect("/")
 
-# 啟動伺服器
 app.run(port = 3000)
